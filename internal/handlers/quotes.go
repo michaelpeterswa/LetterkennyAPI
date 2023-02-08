@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"676f.dev/rfc7807"
+	"go.uber.org/zap"
 )
 
 type quoteResponse struct {
@@ -13,11 +14,12 @@ type quoteResponse struct {
 }
 
 type QuoteHandler struct {
+	Logger *zap.Logger
 	Quotes []string
 }
 
-func NewQuoteHandler(quotes []string) *QuoteHandler {
-	return &QuoteHandler{Quotes: quotes}
+func NewQuoteHandler(logger *zap.Logger, quotes []string) *QuoteHandler {
+	return &QuoteHandler{Logger: logger, Quotes: quotes}
 }
 
 func (qh *QuoteHandler) getQuote() quoteResponse {
@@ -25,9 +27,13 @@ func (qh *QuoteHandler) getQuote() quoteResponse {
 }
 
 func (qh *QuoteHandler) Handle(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
 	err := json.NewEncoder(w).Encode(qh.getQuote())
 	if err != nil {
-		rfc7807.SimpleResponse(w, http.StatusInternalServerError, "failed to encode quote")
+		qh.Logger.Error("failed to encode quote", zap.Error(err))
+		err = rfc7807.SimpleResponse(w, http.StatusInternalServerError, "failed to encode quote")
+		if err != nil {
+			qh.Logger.Error("failed to send error", zap.Error(err))
+			w.WriteHeader(http.StatusInternalServerError)
+		}
 	}
 }
