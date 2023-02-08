@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/michaelpeterswa/letterkennyapi/internal/handlers"
 	"github.com/michaelpeterswa/letterkennyapi/internal/logging"
+	"github.com/michaelpeterswa/letterkennyapi/internal/quotes"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.uber.org/zap"
 )
@@ -37,6 +38,9 @@ func main() {
 
 	// main router
 	mainRouter := mux.NewRouter()
+	apiRouter := mainRouter.PathPrefix("/api").Subrouter()
+	v1Router := apiRouter.PathPrefix("/v1").Subrouter()
+	v1Router.HandleFunc("/quotes", handlers.NewQuoteHandler(logger, quotes.LetterkennyQuotes).Handle)
 	mainRouter.HandleFunc("/", handlers.NewHomeHandler(hostname).Handle)
 	err = http.ListenAndServe(":8080", mainRouter)
 	if err != nil {

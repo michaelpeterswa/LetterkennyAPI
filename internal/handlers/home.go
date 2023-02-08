@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-type home struct {
+type homeResponse struct {
 	Hostname string `json:"hostname"`
 }
 
@@ -17,8 +17,8 @@ func NewHomeHandler(hostname string) *HomeHandler {
 	return &HomeHandler{Hostname: hostname}
 }
 
-func (hh *HomeHandler) toHome() home {
-	return home{Hostname: hh.Hostname}
+func (hh *HomeHandler) toHome() homeResponse {
+	return homeResponse{Hostname: hh.Hostname}
 }
 
 func (hh *HomeHandler) Handle(w http.ResponseWriter, r *http.Request) {
