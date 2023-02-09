@@ -1,5 +1,7 @@
 package quotes
 
+import "math/rand"
+
 var LetterkennyQuotes = []string{
 	"Fuck you, your life's so fuckin' miserable I ran a 15k to raise awareness for it",
 	"Get this guy a fucking puppers.",
@@ -68,4 +70,8 @@ var LetterkennyQuotes = []string{
 	"Certified beautician.",
 	"You lookin' for a tilly buddy, lets have a donnybrook!",
 	"You're a fuckin hero two two!",
+}
+
+func GetRandomQuote() string {
+	return LetterkennyQuotes[rand.Intn(len(LetterkennyQuotes))]
 }

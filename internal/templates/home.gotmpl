@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@1.*/css/pico.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+      async function getQuote() {
+        let response = await axios.get('{{ .URL }}/api/v1/quotes')
+
+        return await response.data.quote
+      }
+    </script>
+    <title>{{ .Title }}</title>
+  </head>
+  <body>
+    <main class="container">
+      <hgroup>
+        <h1>Letterkenny API</h1>
+        <h4 x-data="" x-text="getQuote"></h4>
+      </hgroup>
+    </main>
+    <footer class="container">
+      <p>Instance ID: {{ .InstanceID }}</p>
+    </footer>
+  </body>
+</html>
