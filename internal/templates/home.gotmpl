@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@1.*/css/pico.min.css">
+    <link href="/static/prism-duotone-sea.css" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>  
+      async function getQuote() {
+        let response = await axios.get('{{ .URL }}/api/v1/quotes')
+
+        return await response.data.quote
+      }
+    </script>
+    <title>{{ .Title }}</title>
+  </head>
+  <body>
+    <header class="container">
+      <hgroup>
+        <h1>Letterkenny API</h1>
+        <h4 x-data="" x-text="getQuote"></h4>
+      </hgroup>
+    </header>
+    <main class="container">
+      <h3>API Endpoints</h3>
+      <details>
+        <summary>/api/v1/quotes</summary>
+        <h5>GET</h5>
+        <pre><code class="language-json">{
+  "quote": "This is a sample quote..."
+}</code></pre>
+      </details>
+    </main>
+    <footer class="container">
+      <p><b>Instance ID:</b> {{ .InstanceID }}</p>
+    </footer>
+	  <script src="/static/prism.js"></script>
+  </body>
+</html>

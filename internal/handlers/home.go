@@ -1,30 +1,39 @@
 package handlers
 
 import (
-	"encoding/json"
+	"html/template"
 	"net/http"
+
+	"676f.dev/rfc7807"
+	"go.uber.org/zap"
 )
 
-type homeResponse struct {
-	Hostname string `json:"hostname"`
-}
-
 type HomeHandler struct {
-	Hostname string
+	Logger        *zap.Logger
+	InstanceID    string
+	Title         string
+	ProductionURL string
+	HomeTemplate  *template.Template
 }
 
-func NewHomeHandler(hostname string) *HomeHandler {
-	return &HomeHandler{Hostname: hostname}
+type HomeData struct {
+	InstanceID string
+	URL        string
+	Title      string
 }
 
-func (hh *HomeHandler) toHome() homeResponse {
-	return homeResponse{Hostname: hh.Hostname}
+func NewHomeHandler(logger *zap.Logger, instanceID string, title string, produrl string, homeTemplate *template.Template) *HomeHandler {
+	return &HomeHandler{InstanceID: instanceID, HomeTemplate: homeTemplate, Title: title, ProductionURL: produrl, Logger: logger}
 }
 
 func (hh *HomeHandler) Handle(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	err := json.NewEncoder(w).Encode(hh.toHome())
+	homeData := HomeData{InstanceID: hh.InstanceID, URL: hh.ProductionURL, Title: hh.Title}
+	err := hh.HomeTemplate.Execute(w, homeData)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		err := rfc7807.SimpleResponse(w, http.StatusInternalServerError, "could not render home template")
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			hh.Logger.Error("could not render home template", zap.Error(err))
+		}
 	}
 }

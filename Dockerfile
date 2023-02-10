@@ -12,4 +12,7 @@ RUN go get -d -v ./... && CGO_ENABLED=0 GOOS=linux go build ./cmd/letterkennyapi
 FROM gcr.io/distroless/static-debian11:latest-amd64 as stage-final
 
 COPY --from=stage-compile /go/src/app/letterkennyapi /
+COPY --from=stage-compile /go/src/app/internal/templates/ /templates/
+COPY --from=stage-compile /go/src/app/static/ /static/
+
 CMD ["/letterkennyapi"]
