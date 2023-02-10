@@ -13,5 +13,6 @@ FROM gcr.io/distroless/static-debian11:latest-amd64 as stage-final
 
 COPY --from=stage-compile /go/src/app/letterkennyapi /
 COPY --from=stage-compile /go/src/app/internal/templates/ /templates/
+COPY --from=stage-compile /go/src/app/static/ /static/
 
 CMD ["/letterkennyapi"]

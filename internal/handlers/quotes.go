@@ -27,7 +27,6 @@ func (qh *QuoteHandler) getQuoteResponse() quoteResponse {
 
 func (qh *QuoteHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 	err := json.NewEncoder(w).Encode(qh.getQuoteResponse())
 	if err != nil {
 		qh.Logger.Error("failed to encode quote", zap.Error(err))

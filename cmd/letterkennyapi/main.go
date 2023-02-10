@@ -13,6 +13,7 @@ import (
 	"github.com/knadh/koanf/providers/env"
 	"github.com/michaelpeterswa/letterkennyapi/internal/handlers"
 	"github.com/michaelpeterswa/letterkennyapi/internal/logging"
+	"github.com/michaelpeterswa/letterkennyapi/internal/middleware"
 	"github.com/michaelpeterswa/letterkennyapi/internal/quotes"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.uber.org/zap"
@@ -64,7 +65,9 @@ func main() {
 
 	// main router
 	mainRouter := mux.NewRouter()
+	mainRouter.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	apiRouter := mainRouter.PathPrefix("/api").Subrouter()
+	apiRouter.Use(middleware.CORS)
 	v1Router := apiRouter.PathPrefix("/v1").Subrouter()
 	v1Router.HandleFunc("/quotes", handlers.NewQuoteHandler(logger, quotes.LetterkennyQuotes).Handle)
 	mainRouter.HandleFunc("/", handlers.NewHomeHandler(logger, instanceID, k.String("title"), k.String("productionurl"), homeTemplate).Handle)
