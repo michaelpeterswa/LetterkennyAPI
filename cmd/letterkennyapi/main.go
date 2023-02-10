@@ -27,10 +27,13 @@ func main() {
 		log.Panicf("could not acquire zap logger: %s", err.Error())
 	}
 
-	k.Load(env.Provider("LKAPI_", ".", func(s string) string {
+	err = k.Load(env.Provider("LKAPI_", ".", func(s string) string {
 		return strings.Replace(strings.ToLower(
 			strings.TrimPrefix(s, "LKAPI_")), "_", ".", -1)
 	}), nil)
+	if err != nil {
+		logger.Fatal("could not load environment variables", zap.Error(err))
+	}
 
 	sid := shortid.NewShortID(shortid.Base58CharacterSet)
 	instanceID, err := sid.Generate(6)
